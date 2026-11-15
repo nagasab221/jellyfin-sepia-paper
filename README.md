@@ -12,7 +12,7 @@ and episodes slide up over the picture on a sheet of paper.
 
 ## Install
 
-In Jellyfin, open **Dashboard → General → Custom CSS code**, paste this line and save:
+In Jellyfin, open **Dashboard → Branding** (in older versions: **Dashboard → General**), paste this line into **Custom CSS code** and save:
 
 ```css
 @import url("https://nagasab221.github.io/jellyfin-sepia-paper/sepia-paper.css");

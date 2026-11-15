@@ -4,7 +4,7 @@
    Movie and series pages open on a fullscreen picture; the details slide up
    over it on a sheet of paper.
 
-   Install: Dashboard → General → Custom CSS code
+   Install: Dashboard → Branding → Custom CSS code (older Jellyfin: Dashboard → General)
      @import url("https://nagasab221.github.io/jellyfin-sepia-paper/sepia-paper.css");
 
    https://github.com/nagasab221/jellyfin-sepia-paper · MIT
