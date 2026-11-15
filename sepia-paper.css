@@ -542,8 +542,49 @@ a, .button-link, .emby-button.button-link { color: var(--sp-accent); }
   border-top: 1px solid var(--sp-hairline);
 }
 .nowPlayingBarTop .mdl-slider-background-lower { background: var(--sp-accent) !important; }
-.upNextDialog { background: rgb(var(--sp-bg-rgb) / .92) !important; border-radius: var(--sp-radius-large); border: 1px solid var(--sp-hairline); }
-.upNextDialog-countdownText { color: var(--sp-accent) !important; }
+/* "Up next": a small card of paper */
+.upNextContainer, .upNextDialog {
+  background: rgb(var(--sp-surface-rgb) / .94) !important;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid color-mix(in srgb, var(--sp-bg) 87%, var(--sp-ink)) !important;
+  border-radius: var(--sp-radius-large) !important;
+  box-shadow: 0 10px 32px rgb(0 0 0 / .35) !important;
+  color: var(--sp-ink) !important;
+  padding: .85em 1em .8em !important;
+}
+.upNextDialog-nextVideoText {
+  font-family: var(--sp-sans) !important;
+  font-size: .7em !important;
+  font-weight: 500 !important;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--sp-muted) !important;
+  margin: 0 0 .5em !important;
+}
+.upNextDialog-countdownText { color: var(--sp-accent) !important; font-weight: 600 !important; }
+.upNextDialog-title {
+  font-family: var(--sp-serif) !important;
+  font-weight: 400 !important;
+  font-size: 1.15em !important;
+  color: var(--sp-ink) !important;
+  width: 22em !important;
+  margin: 0 0 .3em !important;
+}
+.upNextDialog-mediainfo, .upNextDialog-mediainfo .mediaInfoItem { color: var(--sp-muted) !important; font-size: .85em; }
+.upNextDialog-buttons { width: auto !important; justify-content: flex-end !important; gap: .45em; margin-top: .8em !important; }
+.upNextDialog-button {
+  margin: 0 !important;
+  padding: .4em .95em !important;
+  font-size: .85em !important;
+  border-radius: var(--sp-radius) !important;
+  background: transparent !important;
+  color: var(--sp-ink) !important;
+  border: 1px solid var(--sp-outline) !important;
+}
+.upNextDialog-button:hover { background: var(--sp-hover) !important; }
+.upNextDialog .btnStartNow { background: var(--sp-accent) !important; color: var(--sp-on-accent) !important; border-color: var(--sp-accent) !important; font-weight: 600 !important; }
+.upNextDialog .btnStartNow:hover { background: var(--sp-accent-hover) !important; }
 
 /* the video player: PaperView's reading bar. A slim strip of paper along the
    bottom, a hairline-thin sepia progress line, quiet buttons, sepia play */
