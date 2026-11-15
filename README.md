@@ -18,6 +18,10 @@ In Jellyfin, open **Dashboard → Branding** (in older versions: **Dashboard →
 @import url("https://nagasab221.github.io/jellyfin-sepia-paper/sepia-paper.css");
 ```
 
+Then turn on **Settings → Display → Backdrops**. Jellyfin only loads the big picture on desktop
+when that's on, and the theme turns it into the fullscreen picture on movie and series pages.
+Other pages stay calm and don't show backdrops.
+
 Reload the page (Ctrl+Shift+R in a browser). That's it: it applies to every user and to
 every app that uses Jellyfin's web interface (browsers, Jellyfin Desktop, Jellyfin Media
 Player, the Android app). Native apps with their own interface (Swiftfin, Findroid, most
@@ -57,8 +61,10 @@ Put any of these **under** the `@import` line to change them:
 ![A library](docs/library.png)
 ![Settings](docs/settings.png)
 
-The fullscreen picture shows on the desktop layout for items that have a backdrop image.
-Items without one keep the normal layout with the poster. Phones keep Jellyfin's own layout,
+The fullscreen picture shows on the desktop layout when Backdrops are on and the item has a
+backdrop image. Without one, the page keeps the poster layout, with a short top band and a serif title.
+Title logos (the artwork Jellyfin downloads for a show's name) are hidden on desktop; the serif
+title replaces them, because store logos are often low resolution and look blurry when enlarged. Phones keep Jellyfin's own layout,
 in the same colours.
 
 Made for **Jellyfin 10.10 – 12.x** (the screenshots use Jellyfin 12.4's stylesheets).

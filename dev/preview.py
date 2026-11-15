@@ -33,14 +33,16 @@ def poster(i, title):
     return "data:image/svg+xml;utf8," + svg.replace("#", "%23").replace('"', "'")
 
 
-def head(extra_class=""):
+def head(extra_class="", backdrop=None):
     css = sorted(glob.glob(os.path.join(WEB, "*.css")))
     links = "".join(f'<link rel="stylesheet" href="file://{c}">' for c in css)
     links += f'<link rel="stylesheet" href="file://{WEB}/themes/dark/theme.css">'
     links += f'<link rel="stylesheet" href="file://{os.path.abspath(THEME)}">'
-    return (f'<!doctype html><html class="layout-desktop {extra_class}" dir="ltr"><head><meta charset="utf-8">'
-            f'{links}</head><body class="force-scroll">'
-            '<div class="backdropContainer"></div><div class="backgroundContainer"></div>')
+    return (f'<!doctype html><html class="layout-desktop {extra_class}"><head><meta charset="utf-8">'
+            f'{links}</head><body class="force-scroll" dir="ltr">'
+            + (f'<div class="backdropContainer"><div class="backdropImage displayingBackdropImage" style="background-image:url(&quot;file://{backdrop}&quot;)"></div></div>'
+               '<div class="backgroundContainer withBackdrop"></div>' if backdrop else
+               '<div class="backdropContainer"></div><div class="backgroundContainer"></div>'))
 
 
 def header(title, tabs=None, transparent=False):
@@ -153,7 +155,7 @@ def library():
 
 def details():
     """hand-built from Jellyfin 12.4's itemDetails template hierarchy"""
-    bd = f' style="background-image:url(&quot;file://{BACKDROP}&quot;)"' if BACKDROP else ""
+    bd = ""
     btn = lambda cls, icon: (f'<button is="emby-button" type="button" class="button-flat {cls} detailButton emby-button">'
                              f'<div class="detailButton-content"><span class="material-icons detailButton-icon {icon}"></span></div></button>')
     buttons = btn("btnPlay", "play_arrow") + btn("btnPlayTrailer", "theaters") + btn("btnPlaystate", "check") + \
@@ -180,7 +182,38 @@ def details():
  </div></div></div>
 <div class="detailPageSecondaryContainer padded-left padded-bottom-page"><div class="detailPageContent">{section("Cast &amp; Crew", cast)}{section("More Like This", similar)}</div></div>
 </div></div>'''
-    return (head() + header("", transparent=True) +
+    return (head(backdrop=BACKDROP or None) + header("", transparent=True) +
+            f'<div class="mainAnimatedPages skinBody"><div class="mainAnimatedPage">{page}</div></div></body></html>')
+
+
+def season():
+    """a season page with Backdrops turned off: poster layout + episode list"""
+    eps = "".join(
+        f'<div class="listItem listItem-largeImage listItem-withContentWrapper"><div class="listItem-content">'
+        f'<div class="listItemImage listItemImage-large itemAction lazy" style="background-image:url(&quot;{thumb(i, t)}&quot;)"></div>'
+        f'<div class="listItemBody"><div class="listItemBodyText">{i + 1}. {t}</div>'
+        f'<div class="secondary listItemMediaInfo listItemBodyText"><div class="mediaInfoItem">22m</div>'
+        f'<div class="starRatingContainer mediaInfoItem"><span class="material-icons starIcon star"></span>6.{5 + i}</div></div>'
+        f'<div class="secondary listItem-overview listItemBodyText"><bdi>{o}</bdi></div></div></div></div>'
+        for i, (t, o) in enumerate([("The Good Ones", "Amy returns to work. Jake and Rosa take a difficult case."),
+                                    ("The Lake House", "Terry needs Jake's help at the lake house."),
+                                    ("Blue Flu", "Half the precinct calls in sick."),
+                                    ("Balancing", "Holt and Jake butt heads over a new initiative.")]))
+    btn = lambda cls, icon: (f'<button is="emby-button" type="button" class="button-flat {cls} detailButton emby-button">'
+                             f'<div class="detailButton-content"><span class="material-icons detailButton-icon {icon}"></span></div></button>')
+    page = f'''<div id="itemDetailPage" class="page libraryPage itemDetailPage noSecondaryNavPage selfBackdropPage">
+<div id="itemBackdrop" class="itemBackdrop"></div><div class="detailLogo"></div>
+<div class="detailPageWrapperContainer"><div class="detailPagePrimaryContainer">
+ <div class="detailImageContainer hide-mobile"><div class="card portraitCard"><div class="cardBox"><div class="cardScalable"><div class="cardPadder cardPadder-portrait" style="padding-bottom:150%"></div><div class="cardImageContainer coveredImage" style="background-image:url(&quot;{poster(5, "Season 8")}&quot;)"></div></div></div></div></div>
+ <div class="detailRibbon padded-left padded-right"><div class="infoWrapper"><div class="nameContainer"><h3 class="parentName focuscontainer-x"><a>Brooklyn Nine-Nine</a></h3><h3 class="itemName infoText subtitle">Season 8</h3></div>
+  <div class="itemMiscInfo itemMiscInfo-primary"></div></div>
+  <div class="mainDetailButtons focuscontainer-x">{btn("btnPlay", "play_arrow")}{btn("btnShuffle", "shuffle")}{btn("btnPlaystate", "check")}{btn("btnUserRating", "favorite")}{btn("btnMoreCommands", "more_vert")}</div></div>
+ <div class="detailPagePrimaryContent padded-right"><div class="detailSection">
+  <div class="detailSectionContent"><p class="overview itemOverview">Jake and the squad balance their personal and professional lives over the course of a very difficult year.</p></div>
+  <div id="listChildrenCollapsible" class="verticalSection detailVerticalSection"><div class="childrenItemsContainer itemsContainer vertical-list">{eps}</div></div>
+ </div></div></div>
+<div class="detailPageSecondaryContainer padded-left padded-bottom-page"><div class="detailPageContent"></div></div></div></div>'''
+    return (head() + header("") +
             f'<div class="mainAnimatedPages skinBody"><div class="mainAnimatedPage">{page}</div></div></body></html>')
 
 
@@ -199,7 +232,7 @@ def dialog():
             '</div></div></div></body></html>')
 
 
-PAGES = [("home", home(), 0), ("home-buttons", home(True), 0), ("library", library(), 0), ("details", details(), 0), ("details-scrolled", details(), 760), ("settings", dialog(), 0)]
+PAGES = [("home", home(), 0), ("home-buttons", home(True), 0), ("library", library(), 0), ("details", details(), 0), ("details-scrolled", details(), 760), ("season-nobackdrops", season(), 0), ("settings", dialog(), 0)]
 
 app = QApplication(sys.argv)
 view = QWebEngineView()

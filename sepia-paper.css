@@ -79,7 +79,7 @@
 }
 
 /* ── type & ground ─────────────────────────────────────────────────────── */
-html, body, .skinBody, .backgroundContainer, .ui-corner-all, .ui-shadow, .wizardStartForm,
+html, .backgroundContainer, .ui-corner-all, .ui-shadow, .wizardStartForm,
 .nowPlayingPlaylist, .dashboardDocument, .dashboardDocument .skinBody {
   background-color: var(--sp-bg) !important;
 }
@@ -477,45 +477,40 @@ a, .button-link, .emby-button.button-link { color: var(--sp-accent); }
 .mainDetailButtons .btnUserRating.ratingbutton-withrating .detailButton-icon,
 .mainDetailButtons .btnPlaystate.playstatebutton-played .detailButton-icon { color: var(--sp-accent) !important; }
 
-/* ── the fullscreen picture (desktop & TV, items that have a backdrop) ─── */
-.layout-desktop .itemDetailPage > .itemBackdrop[style*="url("] {
-  position: fixed !important;
-  inset: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  margin: 0 !important;
-  z-index: 0;
-  pointer-events: none;
-  background-attachment: scroll !important;
-  background-position: center 20% !important;
-  background-size: cover !important;
+/* ── the fullscreen picture ─────────────────────────────────────────────────
+   On desktop Jellyfin paints an item's picture into its fixed, full-window
+   backdrop layer (Settings → Display → Backdrops must be on). On a details
+   page we let that layer show through, shade it, and lay the page over it. */
+.layout-desktop:has(#itemDetailPage:not(.hide)) .backdropContainer {
+  display: block !important;
   filter: sepia(var(--sp-backdrop-tone)) saturate(calc(1 - var(--sp-backdrop-tone) * .4));
 }
-.layout-desktop .itemDetailPage > .itemBackdrop[style*="url("]::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  opacity: var(--sp-backdrop-dim);
-  background:
-    linear-gradient(90deg, rgb(var(--sp-bg-rgb) / .94) 0%, rgb(var(--sp-bg-rgb) / .78) 26%,
-                    rgb(var(--sp-bg-rgb) / .3) 52%, rgb(var(--sp-bg-rgb) / 0) 72%),
-    linear-gradient(0deg, rgb(var(--sp-bg-rgb) / .92) 0%, rgb(var(--sp-bg-rgb) / .35) 28%, rgb(var(--sp-bg-rgb) / 0) 50%),
-    linear-gradient(180deg, rgb(var(--sp-bg-rgb) / .5) 0%, rgb(var(--sp-bg-rgb) / 0) 16%);
+.layout-desktop:has(#itemDetailPage:not(.hide)) .backdropImage { background-position: center 20% !important; }
+.layout-desktop:has(#itemDetailPage:not(.hide)) .backgroundContainer.withBackdrop {
+  background-color: transparent !important;
+  background-image:
+    linear-gradient(90deg, rgb(var(--sp-bg-rgb) / calc(.94 * var(--sp-backdrop-dim))) 0%,
+                    rgb(var(--sp-bg-rgb) / calc(.78 * var(--sp-backdrop-dim))) 26%,
+                    rgb(var(--sp-bg-rgb) / calc(.3 * var(--sp-backdrop-dim))) 52%, rgb(var(--sp-bg-rgb) / 0) 72%),
+    linear-gradient(0deg, rgb(var(--sp-bg-rgb) / calc(.92 * var(--sp-backdrop-dim))) 0%,
+                    rgb(var(--sp-bg-rgb) / calc(.35 * var(--sp-backdrop-dim))) 28%, rgb(var(--sp-bg-rgb) / 0) 50%),
+    linear-gradient(180deg, rgb(var(--sp-bg-rgb) / .5) 0%, rgb(var(--sp-bg-rgb) / 0) 16%) !important;
 }
-/* the poster steps aside: the picture is the cover */
-.layout-desktop .itemDetailPage:has(> .itemBackdrop[style*="url("]) .detailImageContainer { display: none !important; }
-.layout-desktop .itemDetailPage:has(> .itemBackdrop[style*="url("]) .detailPageWrapperContainer {
+/* the page's own (empty on desktop) banner and the poster step aside: the picture is the cover */
+.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage > .itemBackdrop { display: none !important; }
+.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .detailImageContainer { display: none !important; }
+.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .detailPageWrapperContainer {
   position: relative;
   z-index: 1;
   margin-top: 0 !important;
   min-height: 0 !important;
 }
 /* first screen: title, facts and buttons sit low on the left, over the picture */
-.layout-desktop .itemDetailPage:has(> .itemBackdrop[style*="url("]) .detailPagePrimaryContainer {
+.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .detailPagePrimaryContainer {
   display: block !important;
   background: transparent !important;
 }
-.layout-desktop .itemDetailPage:has(> .itemBackdrop[style*="url("]) .detailRibbon {
+.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .detailRibbon {
   display: flex !important;
   flex-direction: column;
   justify-content: flex-end;
@@ -529,19 +524,19 @@ a, .button-link, .emby-button.button-link { color: var(--sp-accent); }
   max-width: min(56em, 64vw);
   background: transparent !important;
 }
-.layout-desktop .itemDetailPage:has(> .itemBackdrop[style*="url("]) .infoWrapper { width: 100%; flex: 0 0 auto !important; }
-.layout-desktop .itemDetailPage:has(> .itemBackdrop[style*="url("]) .nameContainer { text-align: left !important; justify-content: flex-start !important; }
-.layout-desktop .itemDetailPage:has(> .itemBackdrop[style*="url("]) h1.itemName,
-.layout-desktop .itemDetailPage:has(> .itemBackdrop[style*="url("]) .nameContainer .itemName {
+.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .infoWrapper { width: 100%; flex: 0 0 auto !important; }
+.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .nameContainer { text-align: left !important; justify-content: flex-start !important; }
+.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage h1.itemName,
+.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .nameContainer .itemName {
   font-size: clamp(2.2rem, 3.6vw, 4.2rem) !important;
   margin: .1em 0 .25em !important;
   text-shadow: 0 1px 18px rgb(var(--sp-bg-rgb) / .6);
 }
-.layout-desktop .itemDetailPage:has(> .itemBackdrop[style*="url("]) .itemMiscInfo { color: color-mix(in srgb, var(--sp-ink) 72%, var(--sp-muted)); justify-content: flex-start !important; }
-.layout-desktop .itemDetailPage:has(> .itemBackdrop[style*="url("]) .mainDetailButtons { margin: 0 !important; justify-content: flex-start !important; }
+.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .itemMiscInfo { color: color-mix(in srgb, var(--sp-ink) 72%, var(--sp-muted)); justify-content: flex-start !important; }
+.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .mainDetailButtons { margin: 0 !important; justify-content: flex-start !important; }
 
 /* then a sheet of paper slides up over the picture: the overview is its first paragraph */
-.layout-desktop .itemDetailPage:has(> .itemBackdrop[style*="url("]) .detailPagePrimaryContent {
+.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .detailPagePrimaryContent {
   position: relative;
   background: rgb(var(--sp-bg-rgb) / .985) !important;
   border-top: 1px solid var(--sp-hairline);
@@ -550,15 +545,27 @@ a, .button-link, .emby-button.button-link { color: var(--sp-accent); }
   padding: 2.2em 3.3vw 0 !important;
   margin: 0 !important;
 }
-.layout-desktop .itemDetailPage:has(> .itemBackdrop[style*="url("]) .detailPagePrimaryContent .detailSection { max-width: 62em; margin: 0 !important; }
-.layout-desktop .itemDetailPage:has(> .itemBackdrop[style*="url("]) .detailPageSecondaryContainer {
+.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .detailPagePrimaryContent .detailSection { max-width: 62em; margin: 0 !important; }
+.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .detailPageSecondaryContainer {
   background: rgb(var(--sp-bg-rgb) / .985) !important;
   padding: 1em 3.3vw 3em !important;
   margin: 0 !important;
   min-height: 60vh;
 }
-.layout-desktop .itemDetailPage:has(> .itemBackdrop[style*="url("]) .detailPageSecondaryContainer .detailPageContent { padding: 0 !important; }
-.layout-desktop .itemDetailPage:has(> .itemBackdrop[style*="url("]) .detailLogo { display: none !important; }
+.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .detailPageSecondaryContainer .detailPageContent { padding: 0 !important; }
+.layout-desktop .detailLogo { display: none !important; }
+
+/* without backdrops: a short band instead of an empty half screen, and a real title */
+.layout-desktop:not(:has(.backgroundContainer.withBackdrop)) .itemDetailPage > .itemBackdrop { height: 24vh !important; }
+.layout-desktop .itemDetailPage .nameContainer h1.itemName,
+.layout-desktop .itemDetailPage .nameContainer .parentName + .itemName,
+.layout-desktop .itemDetailPage .nameContainer h3.itemName { font-size: 2em !important; }
+
+/* episode lists: compact rows with small stills */
+.layout-desktop .itemDetailPage .listItemImage-large { width: 11vw !important; height: 6.2vw !important; border-radius: var(--sp-radius); }
+.layout-desktop .itemDetailPage .listItem { padding: .35em .5em !important; border-bottom: 1px solid var(--sp-hairline); }
+.layout-desktop .itemDetailPage .listItem-overview { font-size: .86em; line-height: 1.45; margin-top: .25em; }
+.layout-desktop .itemDetailPage .listItemBodyText { font-size: .92em; }
 
 /* phones keep Jellyfin's layout, in paper colours */
 .layout-mobile .itemBackdrop { filter: sepia(var(--sp-backdrop-tone)); }
