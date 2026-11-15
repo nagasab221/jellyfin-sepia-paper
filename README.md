@@ -56,6 +56,7 @@ Put any of these **under** the `@import` line to change them:
 | **Cards** | Flat covers with small corners, no shadow; a sepia hairline on hover and small, quiet hover buttons (only Play is sepia). The row arrows ‹ › are small chevrons on the section line |
 | **Top bar** | The library links (server name, Favorites, Movies, Series) are gone because the home page already has them. Back and the logo (home) stay. On the home page the bar disappears and only a small pill of icons floats at the top right |
 | **Header & menu** | Flat paper with a hairline. Tabs are muted, and the active one gets a sepia underline |
+| **Video player** | Like a reading app's bottom bar: a slim strip of paper with a hairline edge, a thin sepia progress line with a small cream knob, muted times, quiet buttons with a sepia play/pause, and the title in the serif over a soft fade |
 | **Forms & dialogs** | Paper fields with a hairline that turns sepia when focused, a sepia primary button, and surfaces that use hairlines instead of heavy shadows |
 
 ![Home](docs/home.png)

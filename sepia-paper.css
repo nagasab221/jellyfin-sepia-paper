@@ -541,10 +541,106 @@ a, .button-link, .emby-button.button-link { color: var(--sp-accent); }
   background: var(--sp-bg) !important;
   border-top: 1px solid var(--sp-hairline);
 }
-.nowPlayingBarTop .mdl-slider-background-lower, .osdPositionSlider .mdl-slider-background-lower { background: var(--sp-accent) !important; }
-.videoOsdBottom { background: linear-gradient(0deg, rgb(var(--sp-bg-rgb) / .9), rgb(var(--sp-bg-rgb) / 0)) !important; }
-.upNextDialog { background: rgb(var(--sp-bg-rgb) / .92) !important; border-radius: var(--sp-radius-large); }
+.nowPlayingBarTop .mdl-slider-background-lower { background: var(--sp-accent) !important; }
+.upNextDialog { background: rgb(var(--sp-bg-rgb) / .92) !important; border-radius: var(--sp-radius-large); border: 1px solid var(--sp-hairline); }
 .upNextDialog-countdownText { color: var(--sp-accent) !important; }
+
+/* the video player: PaperView's reading bar. A slim strip of paper along the
+   bottom, a hairline-thin sepia progress line, quiet buttons, sepia play */
+.videoOsdBottom {
+  background: rgb(var(--sp-bg-rgb) / .86) !important;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--sp-hairline);
+  padding: .55em 1.4em .45em !important;
+  box-sizing: border-box;
+}
+.videoOsdBottom .osdControls { padding: 0 !important; margin: 0 !important; }
+.videoOsdBottom .osdTextContainer, .videoOsdBottom .osdTitle {
+  color: var(--sp-ink);
+  margin: 0 !important;
+}
+.videoOsdBottom .osdMainTextContainer { margin: 0 0 .15em !important; }
+.videoOsdBottom .osdTitle {
+  font-family: var(--sp-serif) !important;
+  font-weight: 400 !important;
+  font-size: 1.12em !important;
+  line-height: 1.3;
+}
+.videoOsdBottom .osdSecondaryMediaInfo, .videoOsdBottom .osdMediaStatus { color: var(--sp-muted) !important; font-size: .85em; }
+.videoOsdBottom .osdPositionText, .videoOsdBottom .osdDurationText {
+  color: var(--sp-muted) !important;
+  font-size: .8em !important;
+  font-variant-numeric: tabular-nums;
+  min-width: 3.6em;
+  text-align: center;
+}
+.videoOsdBottom .osdTimeText, .videoOsdBottom .endsAtText { color: var(--sp-muted) !important; font-size: .82em !important; }
+
+/* the progress line */
+.videoOsdBottom .sliderContainer { height: 1.6em; display: flex; align-items: center; }
+.videoOsdBottom .mdl-slider-background-flex-container {
+  height: 3px !important;
+  margin-top: -1.5px !important;     /* centred on the slider's middle */
+  border-radius: 2px;
+  overflow: hidden;
+}
+.videoOsdBottom .mdl-slider-background-flex { height: 3px !important; margin: 0 !important; border-radius: 2px; overflow: hidden; }
+.videoOsdBottom .mdl-slider-background-flex-inner { height: 100% !important; }
+.videoOsdBottom .mdl-slider-background-lower,
+.videoOsdBottom .mdl-slider-background-upper { top: 0 !important; bottom: 0 !important; height: 100% !important; }
+.videoOsdBottom .mdl-slider-background-flex { background: rgb(var(--sp-surface-rgb) / .9) !important; }
+.videoOsdBottom .mdl-slider-background-lower { background: var(--sp-accent) !important; }
+.videoOsdBottom .mdl-slider-background-lower-clear, .videoOsdBottom .mdl-slider-background-lower-buffer,
+.videoOsdBottom [class*="buffered"] { background: var(--sp-outline) !important; }
+.videoOsdBottom .mdl-slider-background-upper { background: var(--sp-outline) !important; }   /* buffered */
+.videoOsdBottom .mdl-slider,
+.videoOsdBottom .mdl-slider::-webkit-slider-runnable-track { background: transparent !important; box-shadow: none !important; }
+.videoOsdBottom .mdl-slider::-moz-range-track { background: transparent !important; }
+.videoOsdBottom .mdl-slider::-webkit-slider-thumb {
+  width: 12px !important; height: 12px !important;
+  background: var(--sp-ink) !important; border: none !important; box-shadow: none !important;
+}
+.videoOsdBottom .mdl-slider::-moz-range-thumb { width: 12px; height: 12px; background: var(--sp-ink) !important; border: none; }
+.videoOsdBottom .sliderMarker { background: var(--sp-muted) !important; width: 1px !important; height: 7px !important; opacity: .7; }
+.videoOsdBottom .sliderMarker.watched { background: var(--sp-on-accent) !important; }
+.videoOsdBottom .sliderBubble {
+  background: var(--sp-surface) !important;
+  border: 1px solid var(--sp-hairline) !important;
+  border-radius: var(--sp-radius) !important;
+  color: var(--sp-ink) !important;
+  box-shadow: none !important;
+}
+.chapterThumbContainer { border-radius: var(--sp-radius); overflow: hidden; }
+
+/* buttons: quiet and a size smaller; play/pause is the one sepia thing */
+.videoOsdBottom .buttons { padding: .1em 0 0 !important; gap: .15em; }
+.videoOsdBottom .paper-icon-button-light {
+  color: var(--sp-ink) !important;
+  background: transparent !important;
+  border-radius: var(--sp-radius) !important;
+  padding: .35em !important;
+  margin: 0 .05em !important;
+}
+.videoOsdBottom .paper-icon-button-light:hover { background: var(--sp-hover) !important; color: var(--sp-ink) !important; }
+.videoOsdBottom .xlargePaperIconButton, .videoOsdBottom .largePaperIconButton { font-size: 1.55em !important; }
+.videoOsdBottom .btnPause {
+  background: var(--sp-accent) !important;
+  color: var(--sp-on-accent) !important;
+  margin: 0 .35em !important;
+}
+.videoOsdBottom .btnPause:hover { background: var(--sp-accent-hover) !important; color: var(--sp-on-accent) !important; }
+.videoOsdBottom .btnUserRating .ratingbutton-icon-withrating,
+.videoOsdBottom .btnUserRating.ratingbutton-withrating { color: var(--sp-accent) !important; }
+.videoOsdBottom .osdVolumeSliderContainer { width: 6.5em !important; }
+
+/* top: the title in the serif over a soft fade */
+.osdHeader .MuiTypography-root, .osdHeader .pageTitle {
+  font-family: var(--sp-serif) !important;
+  font-size: 1.05rem !important;
+  color: var(--sp-ink) !important;
+}
+.osdHeader .MuiIconButton-root:hover { background: var(--sp-hover) !important; }
 
 /* ── sign-in page ──────────────────────────────────────────────────────── */
 #loginPage .manualLoginForm, #loginPage .readOnlyContent, #loginPage form {
