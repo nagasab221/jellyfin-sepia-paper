@@ -87,6 +87,9 @@ html, body, button, input, select, textarea, .emby-button, .MuiTypography-root {
   font-family: var(--sp-sans) !important;
 }
 html { color: var(--sp-muted); }
+/* the paper colour lives on <html> alone: body and the app root stay clear so the
+   backdrop layer behind the page can show (MUI's baseline would paint body) */
+body, #reactRoot { background: transparent !important; }
 body { color: var(--sp-ink); }
 ::selection { background: var(--sp-wash); color: var(--sp-ink); }
 * { scrollbar-color: color-mix(in srgb, var(--sp-muted) 45%, transparent) transparent; scrollbar-width: thin; }
@@ -141,6 +144,68 @@ a, .button-link, .emby-button.button-link { color: var(--sp-accent); }
 .emby-tabs-slider { border-bottom: 1px solid var(--sp-hairline); }
 .headerTabs .emby-tabs-slider { border-bottom: none; }
 
+/* ── top bar (Jellyfin's new layout) ───────────────────────────────────────
+   The library links duplicate the home page, so they go. Back and the logo
+   (your way home) stay; on the home page the bar disappears into the page
+   and only a small pill of icons floats at the top right. */
+.MuiAppBar-root .MuiToolbar-root { min-height: 44px !important; }
+.MuiAppBar-root .MuiToolbar-root > .MuiStack-root > a:not(:first-child) { display: none !important; }
+.MuiAppBar-root .MuiToolbar-root > .MuiStack-root > a:first-child {
+  font-size: 0 !important;            /* drop the server name, keep the logo */
+  min-width: 0 !important;
+  padding: 6px !important;
+}
+.MuiAppBar-root .MuiToolbar-root > .MuiStack-root > a:first-child .MuiButton-startIcon { margin: 0 !important; }
+.MuiAppBar-root .MuiIconButton-root { padding: 8px !important; border-radius: var(--sp-radius) !important; }
+.MuiAppBar-root .MuiIconButton-root:hover, .MuiAppBar-root .MuiButton-root:hover { background: var(--sp-hover) !important; }
+
+/* home: no bar, just the icons */
+.layout-desktop:has(#indexPage:not(.hide)) .MuiAppBar-root {
+  background: transparent !important;
+  border-bottom: none !important;
+  pointer-events: none;               /* the empty bar mustn't block clicks on the page */
+}
+.layout-desktop:has(#indexPage:not(.hide)) .MuiAppBar-root .MuiToolbar-root > .MuiStack-root { display: none !important; }
+.layout-desktop:has(#indexPage:not(.hide)) .MuiAppBar-root .MuiToolbar-root > :not(.MuiStack-root) { pointer-events: auto; }
+.layout-desktop:has(#indexPage:not(.hide)) .MuiAppBar-root .MuiToolbar-root > .MuiBox-root:not(:last-child) {
+  flex: 0 0 auto !important;
+  margin-left: auto !important;
+  padding: 0 .2em !important;
+  border-radius: var(--sp-radius-large) 0 0 var(--sp-radius-large);
+}
+.layout-desktop:has(#indexPage:not(.hide)) .MuiAppBar-root .MuiToolbar-root > .MuiBox-root {
+  align-self: flex-start;
+  display: flex !important;
+  align-items: center;
+  box-sizing: border-box;
+  height: 40px;
+  background: rgb(var(--sp-surface-rgb) / .85);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--sp-hairline);
+  border-bottom: 1px solid var(--sp-hairline);
+  margin-top: 6px;
+}
+.layout-desktop:has(#indexPage:not(.hide)) .MuiAppBar-root .MuiToolbar-root > .MuiBox-root:not(:last-child) { border-left: 1px solid var(--sp-hairline); }
+.layout-desktop:has(#indexPage:not(.hide)) .MuiAppBar-root .MuiToolbar-root > .MuiBox-root:last-child {
+  border-right: 1px solid var(--sp-hairline);
+  border-radius: 0 var(--sp-radius-large) var(--sp-radius-large) 0;
+  padding: 0 6px 0 2px !important;
+  width: auto !important;
+}
+.layout-desktop:has(#indexPage:not(.hide)) .MuiAppBar-root .MuiToolbar-root > .MuiBox-root:last-child .MuiIconButton-root { padding: 0 !important; }
+.layout-desktop:has(#indexPage:not(.hide)) .MuiAppBar-root .MuiAvatar-root { width: 30px !important; height: 30px !important; }
+/* pull the page up into the space the bar used to take */
+.layout-desktop #indexPage { margin-top: -38px !important; }
+
+/* details with a picture: the bar floats over it */
+.layout-desktop:has(.backdropImage.displayingBackdropImage):has(#itemDetailPage:not(.hide)) .MuiAppBar-root {
+  background: rgb(var(--sp-bg-rgb) / .55) !important;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom: none !important;
+}
+
 /* ── side drawer ───────────────────────────────────────────────────────── */
 .mainDrawer, .MuiDrawer-paper {
   background-color: var(--sp-bg) !important;
@@ -186,9 +251,20 @@ a, .button-link, .emby-button.button-link { color: var(--sp-accent); }
 .cardText { color: var(--sp-ink); }
 .cardText-secondary, .cardText.cardText-secondary, .textActionButton.cardText-secondary { color: var(--sp-muted) !important; }
 .cardOverlayContainer { background: rgb(var(--sp-bg-rgb) / .5) !important; }
+.cardOverlayButton { padding: .28em !important; font-size: .78em !important; margin: 0 .08em !important; }
+.cardOverlayButton:not(.cardOverlayFab-primary) { background: rgb(var(--sp-bg-rgb) / .72) !important; color: var(--sp-ink) !important; border-radius: 50% !important; }
+.cardOverlayButton:not(.cardOverlayFab-primary):hover { background: rgb(var(--sp-bg-rgb) / .9) !important; color: var(--sp-accent) !important; }
+.cardOverlayButton .cardOverlayButtonIcon, .cardOverlayButtonIcon { font-size: 1.45em !important; }
+.cardOverlayButton-br { bottom: .2em !important; right: .2em !important; }
+.cardOverlayFab-primary {
+  font-size: .8em !important;
+  padding: .45em !important;
+  border-radius: var(--sp-radius) !important;
+}
+.cardOverlayFab-primary .cardOverlayButtonIcon { font-size: 1.8em !important; }
 .cardOverlayButton { color: var(--sp-ink) !important; background: transparent !important; }
 .cardOverlayButton:hover { background: var(--sp-hover) !important; }
-.cardOverlayButton-br .material-icons, .cardOverlayFab-primary {
+.cardOverlayFab-primary {
   background: var(--sp-accent) !important;
   color: var(--sp-on-accent) !important;
 }
@@ -260,12 +336,49 @@ a, .button-link, .emby-button.button-link { color: var(--sp-accent); }
 .homeSectionsContainer .padded-top-focusscale { padding-top: .2em !important; }
 .homeSectionsContainer .padded-bottom-focusscale { padding-bottom: .2em !important; }
 
+/* the ‹ › row arrows: small chevrons sitting on the label line, at its right end */
+.homeSectionsContainer .emby-scrollbuttons {
+  top: .9em !important;
+  right: 3.3% !important;
+  padding: 0 !important;
+  height: 1.55em;
+  display: flex !important;
+  align-items: center;
+  gap: .1em;
+  background: transparent !important;
+}
+.emby-scrollbuttons { background: transparent !important; }
+.emby-scrollbuttons-button,
+.homeSectionsContainer .emby-scrollbuttons-button {
+  width: 1.55em !important;
+  height: 1.55em !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: .9em !important;
+  color: var(--sp-muted) !important;
+  background: transparent !important;
+  border-radius: 3px !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+.emby-scrollbuttons-button.hide { display: none !important; }
+.emby-scrollbuttons-button:hover { color: var(--sp-accent) !important; background: var(--sp-hover) !important; }
+.emby-scrollbuttons-button .material-icons { font-size: 1.25em !important; }
+
 /* small covers */
 .homeSectionsContainer .cardBox { margin: .3em !important; }
 .layout-desktop .homeSectionsContainer .overflowPortraitCard,
 .layout-desktop .homeSectionsContainer .overflowSquareCard { width: clamp(7em, 7vw, 10.5em) !important; }
 .layout-desktop .homeSectionsContainer .overflowBackdropCard { width: clamp(11em, 11.6vw, 17em) !important; }
 .layout-desktop .homeSectionsContainer .overflowSmallBackdropCard { width: clamp(8em, 8vw, 12em) !important; }
+.layout-desktop .itemDetailPage .overflowPortraitCard,
+.layout-desktop .itemDetailPage .overflowSquareCard { width: clamp(7em, 7vw, 10.5em) !important; }
+.layout-desktop .itemDetailPage .overflowBackdropCard { width: clamp(11em, 11.6vw, 17em) !important; }
+.itemDetailPage .cardBox { margin: .3em !important; }
+.itemDetailPage .cardText, .itemDetailPage .cardTextCentered { text-align: left !important; padding-left: 0 !important; }
+.itemDetailPage .cardText-first { font-size: .84em; font-weight: 500; }
+.itemDetailPage .cardText-secondary { font-size: .74em; }
 .homeSectionsContainer .cardFooter { padding: .35em .1em .1em !important; }
 .homeSectionsContainer .cardText,
 .homeSectionsContainer .cardTextCentered { text-align: left !important; padding-left: 0 !important; padding-right: 0 !important; }
@@ -417,6 +530,27 @@ a, .button-link, .emby-button.button-link { color: var(--sp-accent); }
 
 /* ── item details ──────────────────────────────────────────────────────── */
 .itemDetailPage .itemName { color: var(--sp-ink) !important; }
+.itemDetailPage .nameContainer .itemName {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  white-space: normal !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-height: 1.12 !important;
+}
+.itemDetailPage .nameContainer .itemName.originalTitle {
+  font-family: var(--sp-sans) !important;
+  font-size: 1rem !important;
+  font-weight: 400 !important;
+  color: var(--sp-muted) !important;
+  -webkit-line-clamp: 1;
+  margin: 0 0 .5em !important;
+  text-shadow: none !important;
+}
+.itemDetailPage .itemMiscInfo { font-size: .95rem !important; }
 .itemDetailPage h1.itemName, .itemDetailPage .parentName + .itemName { line-height: 1.12; }
 .itemDetailPage .parentName {
   font-family: var(--sp-sans) !important;
@@ -486,31 +620,32 @@ a, .button-link, .emby-button.button-link { color: var(--sp-accent); }
   filter: sepia(var(--sp-backdrop-tone)) saturate(calc(1 - var(--sp-backdrop-tone) * .4));
 }
 .layout-desktop:has(#itemDetailPage:not(.hide)) .backdropImage { background-position: center 20% !important; }
-.layout-desktop:has(#itemDetailPage:not(.hide)) .backgroundContainer.withBackdrop {
+.layout-desktop:has(#itemDetailPage:not(.hide)):has(.backdropImage.displayingBackdropImage) .backgroundContainer {
   background-color: transparent !important;
   background-image:
-    linear-gradient(90deg, rgb(var(--sp-bg-rgb) / calc(.94 * var(--sp-backdrop-dim))) 0%,
-                    rgb(var(--sp-bg-rgb) / calc(.78 * var(--sp-backdrop-dim))) 26%,
-                    rgb(var(--sp-bg-rgb) / calc(.3 * var(--sp-backdrop-dim))) 52%, rgb(var(--sp-bg-rgb) / 0) 72%),
+    linear-gradient(90deg, rgb(var(--sp-bg-rgb) / calc(.97 * var(--sp-backdrop-dim))) 0%,
+                    rgb(var(--sp-bg-rgb) / calc(.88 * var(--sp-backdrop-dim))) 30%,
+                    rgb(var(--sp-bg-rgb) / calc(.45 * var(--sp-backdrop-dim))) 56%, rgb(var(--sp-bg-rgb) / 0) 78%),
     linear-gradient(0deg, rgb(var(--sp-bg-rgb) / calc(.92 * var(--sp-backdrop-dim))) 0%,
                     rgb(var(--sp-bg-rgb) / calc(.35 * var(--sp-backdrop-dim))) 28%, rgb(var(--sp-bg-rgb) / 0) 50%),
     linear-gradient(180deg, rgb(var(--sp-bg-rgb) / .5) 0%, rgb(var(--sp-bg-rgb) / 0) 16%) !important;
 }
 /* the page's own (empty on desktop) banner and the poster step aside: the picture is the cover */
-.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage > .itemBackdrop { display: none !important; }
-.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .detailImageContainer { display: none !important; }
-.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .detailPageWrapperContainer {
+.layout-desktop:has(.backdropImage.displayingBackdropImage) .itemDetailPage > .itemBackdrop { display: none !important; }
+.layout-desktop:has(.backdropImage.displayingBackdropImage) .itemDetailPage .detailImageContainer { display: none !important; }
+.layout-desktop:has(.backdropImage.displayingBackdropImage) .itemDetailPage .detailPageWrapperContainer {
   position: relative;
   z-index: 1;
+  background: transparent !important;   /* Jellyfin paints the page colour here, over the picture */
   margin-top: 0 !important;
   min-height: 0 !important;
 }
 /* first screen: title, facts and buttons sit low on the left, over the picture */
-.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .detailPagePrimaryContainer {
+.layout-desktop:has(.backdropImage.displayingBackdropImage) .itemDetailPage .detailPagePrimaryContainer {
   display: block !important;
   background: transparent !important;
 }
-.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .detailRibbon {
+.layout-desktop:has(.backdropImage.displayingBackdropImage) .itemDetailPage .detailRibbon {
   display: flex !important;
   flex-direction: column;
   justify-content: flex-end;
@@ -524,39 +659,39 @@ a, .button-link, .emby-button.button-link { color: var(--sp-accent); }
   max-width: min(56em, 64vw);
   background: transparent !important;
 }
-.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .infoWrapper { width: 100%; flex: 0 0 auto !important; }
-.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .nameContainer { text-align: left !important; justify-content: flex-start !important; }
-.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage h1.itemName,
-.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .nameContainer .itemName {
-  font-size: clamp(2.2rem, 3.6vw, 4.2rem) !important;
-  margin: .1em 0 .25em !important;
+.layout-desktop:has(.backdropImage.displayingBackdropImage) .itemDetailPage .infoWrapper { width: 100%; flex: 0 0 auto !important; }
+.layout-desktop:has(.backdropImage.displayingBackdropImage) .itemDetailPage .nameContainer { text-align: left !important; justify-content: flex-start !important; }
+.layout-desktop:has(.backdropImage.displayingBackdropImage) .itemDetailPage h1.itemName,
+.layout-desktop:has(.backdropImage.displayingBackdropImage) .itemDetailPage .nameContainer .itemName:not(.originalTitle) {
+  font-size: clamp(2.2rem, 3.4vw, 4rem) !important;
+  margin: .1em 0 .2em !important;
   text-shadow: 0 1px 18px rgb(var(--sp-bg-rgb) / .6);
 }
-.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .itemMiscInfo { color: color-mix(in srgb, var(--sp-ink) 72%, var(--sp-muted)); justify-content: flex-start !important; }
-.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .mainDetailButtons { margin: 0 !important; justify-content: flex-start !important; }
+.layout-desktop:has(.backdropImage.displayingBackdropImage) .itemDetailPage .itemMiscInfo { color: color-mix(in srgb, var(--sp-ink) 72%, var(--sp-muted)); justify-content: flex-start !important; }
+.layout-desktop:has(.backdropImage.displayingBackdropImage) .itemDetailPage .mainDetailButtons { margin: 0 !important; justify-content: flex-start !important; }
 
 /* then a sheet of paper slides up over the picture: the overview is its first paragraph */
-.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .detailPagePrimaryContent {
+.layout-desktop:has(.backdropImage.displayingBackdropImage) .itemDetailPage .detailPagePrimaryContent {
   position: relative;
-  background: rgb(var(--sp-bg-rgb) / .985) !important;
+  background: var(--sp-bg) !important;
   border-top: 1px solid var(--sp-hairline);
   border-radius: var(--sp-radius-large) var(--sp-radius-large) 0 0;
   box-shadow: 0 -24px 48px rgb(var(--sp-bg-rgb) / .55);
   padding: 2.2em 3.3vw 0 !important;
   margin: 0 !important;
 }
-.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .detailPagePrimaryContent .detailSection { max-width: 62em; margin: 0 !important; }
-.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .detailPageSecondaryContainer {
-  background: rgb(var(--sp-bg-rgb) / .985) !important;
+.layout-desktop:has(.backdropImage.displayingBackdropImage) .itemDetailPage .detailPagePrimaryContent .detailSection { max-width: 62em; margin: 0 !important; }
+.layout-desktop:has(.backdropImage.displayingBackdropImage) .itemDetailPage .detailPageSecondaryContainer {
+  background: var(--sp-bg) !important;
   padding: 1em 3.3vw 3em !important;
   margin: 0 !important;
   min-height: 60vh;
 }
-.layout-desktop:has(.backgroundContainer.withBackdrop) .itemDetailPage .detailPageSecondaryContainer .detailPageContent { padding: 0 !important; }
+.layout-desktop:has(.backdropImage.displayingBackdropImage) .itemDetailPage .detailPageSecondaryContainer .detailPageContent { padding: 0 !important; }
 .layout-desktop .detailLogo { display: none !important; }
 
 /* without backdrops: a short band instead of an empty half screen, and a real title */
-.layout-desktop:not(:has(.backgroundContainer.withBackdrop)) .itemDetailPage > .itemBackdrop { height: 24vh !important; }
+.layout-desktop:not(:has(.backdropImage.displayingBackdropImage)) .itemDetailPage > .itemBackdrop { height: 24vh !important; }
 .layout-desktop .itemDetailPage .nameContainer h1.itemName,
 .layout-desktop .itemDetailPage .nameContainer .parentName + .itemName,
 .layout-desktop .itemDetailPage .nameContainer h3.itemName { font-size: 2em !important; }

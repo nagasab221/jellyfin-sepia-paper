@@ -53,7 +53,8 @@ Put any of these **under** the `@import` line to change them:
 | **Movie & series pages** | A fullscreen picture with a soft shade from the left and bottom, a large serif title and quiet square buttons with a sepia Play. Below that, a paper sheet holds the overview, cast and episodes |
 | **Home page** | Compact, like a reading-app library: a serif masthead, small letterspaced section labels over hairlines, dense rows of small covers with titles set flush left, and a thin sepia progress line. "My Media" shown as buttons becomes a row of small chips |
 | **Library grids** | Denser: 12 posters per row on a 1080p screen instead of 9, titles flush left |
-| **Cards** | Flat covers with small corners, no shadow; a sepia hairline on hover, a sepia outline when focused with a remote or keyboard |
+| **Cards** | Flat covers with small corners, no shadow; a sepia hairline on hover and small, quiet hover buttons (only Play is sepia). The row arrows ‹ › are small chevrons on the section line |
+| **Top bar** | The library links (server name, Favorites, Movies, Series) are gone because the home page already has them. Back and the logo (home) stay. On the home page the bar disappears and only a small pill of icons floats at the top right |
 | **Header & menu** | Flat paper with a hairline. Tabs are muted, and the active one gets a sepia underline |
 | **Forms & dialogs** | Paper fields with a hairline that turns sepia when focused, a sepia primary button, and surfaces that use hairlines instead of heavy shadows |
 
@@ -73,9 +74,16 @@ recent Jellyfin Desktop).
 
 ## Development
 
-`sepia-paper.css` is the whole theme. `dev/preview.py` renders it offscreen on mock pages
-built from Jellyfin's own templates and stylesheets. It needs `python3-pyside6` and a local
-`jellyfin-web` install:
+`sepia-paper.css` is the whole theme.
+
+`dev/jfdebug.py` drives a real Jellyfin client over the Chrome DevTools protocol: run JavaScript,
+take screenshots, navigate, and load your local `sepia-paper.css` in place of the published one,
+all without publishing anything. Start Jellyfin Desktop (Flatpak) with
+`flatpak run --env=QTWEBENGINE_REMOTE_DEBUGGING=127.0.0.1:9222 org.jellyfin.JellyfinDesktop`.
+It needs `python-websocket-client`.
+
+`dev/preview.py` renders the theme offscreen on mock pages built from Jellyfin's own templates
+and stylesheets. It needs `python3-pyside6` and a local `jellyfin-web` install:
 
 ```sh
 python3 dev/make_backdrop.py /tmp/backdrop.jpg
