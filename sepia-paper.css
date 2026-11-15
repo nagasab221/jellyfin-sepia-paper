@@ -255,13 +255,28 @@ a, .button-link, .emby-button.button-link { color: var(--sp-accent); }
 .cardOverlayButton:not(.cardOverlayFab-primary) { background: rgb(var(--sp-bg-rgb) / .72) !important; color: var(--sp-ink) !important; border-radius: 50% !important; }
 .cardOverlayButton:not(.cardOverlayFab-primary):hover { background: rgb(var(--sp-bg-rgb) / .9) !important; color: var(--sp-accent) !important; }
 .cardOverlayButton .cardOverlayButtonIcon, .cardOverlayButtonIcon { font-size: 1.45em !important; }
-.cardOverlayButton-br { bottom: .2em !important; right: .2em !important; }
+/* the button row: centred along the bottom of the cover */
+.cardOverlayButton-br {
+  left: 0 !important;
+  right: 0 !important;
+  bottom: .3em !important;
+  display: flex !important;
+  justify-content: center !important;
+  gap: .25em;
+}
+/* Play: dead centre of the cover */
 .cardOverlayFab-primary {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  margin: 0 !important;
+  transform: translate(-50%, -50%) !important;
   font-size: .8em !important;
   padding: .45em !important;
   border-radius: var(--sp-radius) !important;
 }
 .cardOverlayFab-primary .cardOverlayButtonIcon { font-size: 1.8em !important; }
+.cardOverlayFab-primary:hover, .cardOverlayFab-primary:focus { background: var(--sp-accent-hover) !important; color: var(--sp-on-accent) !important; }
 .cardOverlayButton { color: var(--sp-ink) !important; background: transparent !important; }
 .cardOverlayButton:hover { background: var(--sp-hover) !important; }
 .cardOverlayFab-primary {
@@ -511,7 +526,17 @@ a, .button-link, .emby-button.button-link { color: var(--sp-accent); }
 .itemSelectionPanel { border-color: var(--sp-accent) !important; }
 .emby-scrollbuttons .emby-scrollbuttons-button { background: rgb(var(--sp-bg-rgb) / .85) !important; }
 
-/* ── playback chrome ───────────────────────────────────────────────────── */
+/* ── playback chrome ─
+   the player's header is a soft fade over the video, never a solid band */
+.skinHeader.osdHeader, .osdHeader.skinHeader-withBackground {
+  background: linear-gradient(180deg, rgb(var(--sp-bg-rgb) / .78) 0%, rgb(var(--sp-bg-rgb) / .35) 45%, rgb(var(--sp-bg-rgb) / 0) 100%) !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.layout-desktop:has(#videoOsdPage:not(.hide)) .MuiAppBar-root { display: none !important; }
+/* ───────────────────────────────────────────────────── */
 .nowPlayingBar {
   background: var(--sp-bg) !important;
   border-top: 1px solid var(--sp-hairline);
@@ -630,6 +655,22 @@ a, .button-link, .emby-button.button-link { color: var(--sp-accent); }
                     rgb(var(--sp-bg-rgb) / calc(.35 * var(--sp-backdrop-dim))) 28%, rgb(var(--sp-bg-rgb) / 0) 50%),
     linear-gradient(180deg, rgb(var(--sp-bg-rgb) / .5) 0%, rgb(var(--sp-bg-rgb) / 0) 16%) !important;
 }
+/* no layout jump: a details page stays blank (paper) until its picture is up, then
+   appears straight in the fullscreen layout. With no picture after 2s it shows the
+   normal layout instead. */
+@keyframes sp-appear { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sp-appear-now { from { opacity: 0; } to { opacity: 1; } }
+.layout-desktop .itemDetailPage > .detailPageWrapperContainer,
+.layout-desktop .itemDetailPage > .itemBackdrop {
+  opacity: 0;
+  animation: sp-appear .25s ease 2s forwards;
+}
+.layout-desktop:has(.backdropImage.displayingBackdropImage) .itemDetailPage > .detailPageWrapperContainer {
+  animation: sp-appear-now .3s ease forwards;
+}
+/* and the picture itself arrives quicker than Jellyfin's slow fade */
+.backdropImageFadeIn { animation-duration: .4s !important; }
+
 /* the page's own (empty on desktop) banner and the poster step aside: the picture is the cover */
 .layout-desktop:has(.backdropImage.displayingBackdropImage) .itemDetailPage > .itemBackdrop { display: none !important; }
 .layout-desktop:has(.backdropImage.displayingBackdropImage) .itemDetailPage .detailImageContainer { display: none !important; }
