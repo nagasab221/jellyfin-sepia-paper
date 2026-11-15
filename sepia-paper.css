@@ -31,6 +31,7 @@
   --sp-backdrop-tone: .15;        /* sepia tint on the fullscreen picture (0 = none, 1 = full) */
   --sp-backdrop-dim: 1;           /* strength of the shading behind the text (0–1) */
   --sp-page-backdrops: none;      /* "block" to show Jellyfin's random backdrops on other pages */
+  --sp-home-title: "Home";        /* the masthead on the home page ("" to hide it) */
 }
 
 /* derived — not meant to be changed */
@@ -207,6 +208,108 @@ a, .button-link, .emby-button.button-link { color: var(--sp-accent); }
 .itemProgressBar { background: rgb(var(--sp-bg-rgb) / .7) !important; height: 4px !important; }
 .itemProgressBarForeground { background-color: var(--sp-accent) !important; }
 .itemProgressBarForeground-recording { background-color: var(--sp-error) !important; }
+
+/* ── home: a compact library page ──────────────────────────────────────────
+   A serif masthead, small letterspaced section labels over a hairline, and
+   dense rows of small covers with their titles set flush left beneath. */
+#homeTab .homeSectionsContainer::before {
+  content: var(--sp-home-title);
+  display: block;
+  margin: .3em 3.3% 0;
+  font-family: var(--sp-serif);
+  font-size: 1.75em;
+  line-height: 1.2;
+  color: var(--sp-ink);
+}
+.homeSectionsContainer > .verticalSection,
+.homeSectionsContainer .verticalSection-extrabottompadding { margin: 0 0 .5em !important; }
+.homeSectionsContainer .verticalSection:empty { display: none; }
+
+/* section labels: PaperView's "APPEARANCE" style */
+.homeSectionsContainer .sectionTitleContainer,
+.homeSectionsContainer .verticalSection > h2.sectionTitle {
+  display: flex !important;
+  align-items: center;
+  margin: .9em 3.3% .35em !important;
+  padding: 0 0 .45em !important;
+  border-bottom: 1px solid var(--sp-hairline);
+}
+.homeSectionsContainer .sectionTitleContainer > h2.sectionTitle { border: 0; margin: 0 !important; padding: 0 !important; }
+.homeSectionsContainer .sectionTitle {
+  font-family: var(--sp-sans) !important;
+  font-size: .72em !important;
+  font-weight: 500 !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase;
+  color: var(--sp-muted) !important;
+  margin: 0 !important;
+}
+.homeSectionsContainer .sectionTitleTextButton {
+  display: inline-flex !important;
+  align-items: center;
+  gap: .2em;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  color: var(--sp-muted) !important;
+}
+.homeSectionsContainer .sectionTitleTextButton:hover .sectionTitle,
+.homeSectionsContainer .sectionTitleTextButton:hover .material-icons { color: var(--sp-accent) !important; }
+.homeSectionsContainer .sectionTitleTextButton .material-icons { font-size: 1.05em; color: var(--sp-muted); padding: 0 !important; }
+.homeSectionsContainer .emby-scroller { padding-top: 0 !important; padding-bottom: .1em !important; margin: 0 !important; }
+.homeSectionsContainer .padded-top-focusscale { padding-top: .2em !important; }
+.homeSectionsContainer .padded-bottom-focusscale { padding-bottom: .2em !important; }
+
+/* small covers */
+.homeSectionsContainer .cardBox { margin: .3em !important; }
+.layout-desktop .homeSectionsContainer .overflowPortraitCard,
+.layout-desktop .homeSectionsContainer .overflowSquareCard { width: clamp(7em, 7vw, 10.5em) !important; }
+.layout-desktop .homeSectionsContainer .overflowBackdropCard { width: clamp(11em, 11.6vw, 17em) !important; }
+.layout-desktop .homeSectionsContainer .overflowSmallBackdropCard { width: clamp(8em, 8vw, 12em) !important; }
+.homeSectionsContainer .cardFooter { padding: .35em .1em .1em !important; }
+.homeSectionsContainer .cardText,
+.homeSectionsContainer .cardTextCentered { text-align: left !important; padding-left: 0 !important; padding-right: 0 !important; }
+.homeSectionsContainer .cardText-first { font-size: .84em; font-weight: 500; padding-top: 0 !important; }
+.homeSectionsContainer .cardText-secondary { font-size: .74em; }
+.homeSectionsContainer .cardText .textActionButton { text-align: left; }
+.homeSectionsContainer .countIndicator, .homeSectionsContainer .playedIndicator { transform: scale(.8); transform-origin: top right; }
+
+/* progress: a thin sepia line along the bottom of the picture */
+.innerCardFooter, .fullInnerCardFooter { background: transparent !important; }
+.innerCardFooter .itemProgressBar { height: 3px !important; background: rgb(var(--sp-bg-rgb) / .65) !important; }
+
+/* "My media" as buttons: compact chips */
+.homeLibraryButtonContainer {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: .4em;
+  margin: 0 !important;
+  padding: .2em 3.3% 0 !important;
+}
+.homeLibraryButtonContainer .homeLibraryButton {
+  width: auto !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: .45em .95em !important;
+  font-size: .9em;
+  background: var(--sp-surface) !important;
+  border: 1px solid var(--sp-hairline) !important;
+}
+.homeLibraryButtonContainer .homeLibraryButton:hover { border-color: var(--sp-accent) !important; }
+.homeLibraryButtonContainer .homeLibraryButton .material-icons { color: var(--sp-accent); font-size: 1.15em; }
+
+/* library grids (Movies, Shows…): denser too */
+@media (min-width: 75em)    { .layout-desktop .vertical-wrap > .portraitCard, .layout-desktop .vertical-wrap > .squareCard { width: 12.5% !important; }
+                              .layout-desktop .vertical-wrap > .backdropCard { width: 20% !important; } }
+@media (min-width: 100em)   { .layout-desktop .vertical-wrap > .portraitCard, .layout-desktop .vertical-wrap > .squareCard { width: 10% !important; }
+                              .layout-desktop .vertical-wrap > .backdropCard { width: 16.666% !important; } }
+@media (min-width: 120em)   { .layout-desktop .vertical-wrap > .portraitCard, .layout-desktop .vertical-wrap > .squareCard { width: 8.333% !important; }
+                              .layout-desktop .vertical-wrap > .backdropCard { width: 14.285% !important; } }
+@media (min-width: 156.25em){ .layout-desktop .vertical-wrap > .portraitCard, .layout-desktop .vertical-wrap > .squareCard { width: 7.142% !important; } }
+.layout-desktop .vertical-wrap .cardBox { margin: .35em !important; }
+.layout-desktop .vertical-wrap .cardText { text-align: left !important; padding-left: 0 !important; }
+.layout-desktop .vertical-wrap .cardText-first { font-size: .86em; font-weight: 500; }
+.layout-desktop .vertical-wrap .cardText-secondary { font-size: .76em; }
 
 /* ── buttons ───────────────────────────────────────────────────────────── */
 .emby-button { border-radius: var(--sp-radius) !important; }

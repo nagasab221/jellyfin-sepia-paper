@@ -70,14 +70,85 @@ def card(i, title, sub, progress=None):
 TITLES = ["Night Train", "The Lighthouse", "Paper Moon", "Harbour", "Saltwater", "Old Maps", "Winter Light", "Atlas"]
 
 
-def home():
-    def row(name, start, prog=False):
-        cards = "".join(card(i + start, t, "2024", 35 + i * 9 if prog else None) for i, t in enumerate(TITLES[:7]))
-        return (f'<div class="verticalSection"><div class="sectionTitleContainer padded-left"><h2 class="sectionTitle sectionTitle-cards">{name}</h2></div>'
-                f'<div class="emby-scroller padded-left"><div class="itemsContainer scrollSlider" style="display:flex;gap:.6em">{cards}</div></div></div>')
-    return (head() + header("Home", ["Home", "Favorites"]) +
-            '<div class="mainAnimatedPages skinBody"><div class="mainAnimatedPage"><div class="page homePage libraryPage" style="padding-top:5em">'
-            + row("Continue Watching", 0, True) + row("Latest Movies", 3) + "</div></div></div></body></html>")
+def thumb(i, title):
+    """a wide SVG 'episode still'"""
+    hues = [28, 200, 340, 140, 260, 10, 180, 50]
+    h = hues[i % len(hues)]
+    svg = (f"<svg xmlns='http://www.w3.org/2000/svg' width='480' height='270'>"
+           f"<defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>"
+           f"<stop offset='0' stop-color='hsl({h},30%,42%)'/><stop offset='1' stop-color='hsl({(h + 40) % 360},35%,16%)'/>"
+           f"</linearGradient></defs><rect width='480' height='270' fill='url(%23g)'/>"
+           f"<circle cx='{120 + i * 37 % 260}' cy='110' r='46' fill='white' opacity='.12'/></svg>")
+    return "data:image/svg+xml;utf8," + svg.replace("#", "%23").replace('"', "'")
+
+
+def jcard(kind, i, title, sub, progress=None):
+    """card markup as Jellyfin's cardBuilder writes it"""
+    pad = {"overflowPortraitCard": "150%", "portraitCard": "150%", "overflowBackdropCard": "56.25%",
+           "overflowSmallBackdropCard": "56.25%"}[kind]
+    img = poster(i, title) if "ortrait" in kind else thumb(i, title)
+    bar = (f'<div class="innerCardFooter fullInnerCardFooter innerCardFooterClear"><div class="itemProgressBar">'
+           f'<div class="itemProgressBarForeground" style="width:{progress}%"></div></div></div>' if progress else "")
+    return (f'<div class="card {kind} card-hoverable card-withuserdata"><div class="cardBox cardBox-bottompadded">'
+            f'<div class="cardScalable"><div class="cardPadder cardPadder-{kind.replace("Card", "")}" style="padding-bottom:{pad}"></div>'
+            f'<a class="cardImageContainer coveredImage cardContent itemAction" style="background-image:url(&quot;{img}&quot;)">{bar}</a>'
+            f'<div class="cardOverlayContainer itemAction"></div></div>'
+            f'<div class="cardText cardTextCentered cardText-first"><bdi>{title}</bdi></div>'
+            f'<div class="cardText cardTextCentered cardText-secondary"><bdi>{sub}</bdi></div></div></div>')
+
+
+MOVIES = ["Night Train", "The Lighthouse", "Paper Moon", "Harbour", "Saltwater", "Old Maps", "Winter Light", "Atlas",
+          "Low Tide", "The Orchard", "Glass Rivers", "Small Hours", "Northbound", "Inkwell"]
+SHOWS = ["The Keepers", "Ferryman", "Quiet Street", "Marginalia", "Second Draft", "Field Notes", "Tidewater",
+         "The Archive", "Long Division", "Overcast", "Postmark", "Hinterland"]
+
+
+def section(i, title, cards, link=False):
+    if link:
+        head = (f'<div class="sectionTitleContainer sectionTitleContainer-cards padded-left">'
+                f'<a is="emby-linkbutton" class="more button-flat button-flat-mini sectionTitleTextButton emby-button">'
+                f'<h2 class="sectionTitle sectionTitle-cards">{title}</h2><span class="material-icons chevron_right"></span></a></div>')
+    else:
+        head = f'<h2 class="sectionTitle sectionTitle-cards padded-left">{title}</h2>'
+    return (f'<div class="verticalSection section{i}">{head}'
+            f'<div is="emby-scroller" class="padded-top-focusscale padded-bottom-focusscale emby-scroller">'
+            f'<div is="emby-itemscontainer" class="itemsContainer scrollSlider focuscontainer-x" style="display:flex;white-space:nowrap">'
+            f'{cards}</div></div></div>')
+
+
+def home(buttons=False):
+    if buttons:
+        icons = [("Movies", "movie"), ("Shows", "tv"), ("Music", "library_music"), ("Collections", "folder")]
+        lib = ('<div class="verticalSection verticalSection-extrabottompadding section0">'
+               '<h2 class="sectionTitle sectionTitle-cards padded-left">My Media</h2>'
+               '<div class="homeLibraryButtonContainer itemsContainer padded-left padded-right vertical-wrap focuscontainer-x">'
+               + "".join(f'<a is="emby-linkbutton" class="raised homeLibraryButton emby-button"><span class="material-icons homeLibraryIcon {ic}"></span>'
+                         f'<span class="homeLibraryText">{n}</span></a>' for n, ic in icons) + '</div></div>')
+    else:
+        lib = section(0, "My Media", "".join(jcard("overflowSmallBackdropCard", i, n, "") for i, n in
+                                             enumerate(["Movies", "Shows", "Music", "Collections"])))
+    body = (lib
+            + section(1, "Continue Watching", "".join(jcard("overflowBackdropCard", i + 1, n, s, p) for i, (n, s, p) in enumerate(
+                [("The Keepers", "S2:E4 · Low Water", 62), ("Night Train", "2023", 35), ("Ferryman", "S1:E7 · Crossings", 80),
+                 ("Paper Moon", "2021", 18), ("Marginalia", "S3:E1 · Footnotes", 47)])))
+            + section(2, "Next Up", "".join(jcard("overflowBackdropCard", i + 4, n, s) for i, (n, s) in enumerate(
+                [("Quiet Street", "S1:E3 · Number Nine"), ("Second Draft", "S2:E1 · Revisions"), ("Field Notes", "S1:E9 · Moss"),
+                 ("Tidewater", "S4:E2 · Ebb"), ("The Archive", "S1:E5 · Index")])), link=True)
+            + section(3, "Latest Movies", "".join(jcard("overflowPortraitCard", i, n, str(2026 - i % 4)) for i, n in enumerate(MOVIES)), link=True)
+            + section(4, "Latest Shows", "".join(jcard("overflowPortraitCard", i + 3, n, str(2025 - i % 3)) for i, n in enumerate(SHOWS)), link=True))
+    return (head() + header("", ["Home", "Favorites"]) +
+            '<div class="mainAnimatedPages skinBody"><div class="mainAnimatedPage"><div style="height:3.7em"></div>'
+            '<div id="indexPage" class="page homePage libraryPage allLibraryPage backdropPage pageWithAbsoluteTabs withTabs" style="padding-top:4.2em">'
+            f'<div class="tabContent pageTabContent is-active" id="homeTab" data-index="0"><div class="sections homeSectionsContainer">{body}</div></div>'
+            '</div></div></div></body></html>')
+
+
+def library():
+    cards = "".join(jcard("portraitCard", i, n, str(2026 - i % 5)) for i, n in enumerate((MOVIES + SHOWS) * 2))
+    return (head() + header("Movies", ["Movies", "Suggestions", "Favorites", "Collections", "Genres"]) +
+            '<div class="mainAnimatedPages skinBody"><div class="mainAnimatedPage"><div class="page libraryPage" style="padding-top:4.5em">'
+            f'<div is="emby-itemscontainer" class="itemsContainer vertical-wrap centered padded-left padded-right" style="display:flex;flex-wrap:wrap">{cards}</div>'
+            '</div></div></div></body></html>')
 
 
 def details():
@@ -128,13 +199,13 @@ def dialog():
             '</div></div></div></body></html>')
 
 
-PAGES = [("home", home(), 0), ("details", details(), 0), ("details-scrolled", details(), 760), ("settings", dialog(), 0)]
+PAGES = [("home", home(), 0), ("home-buttons", home(True), 0), ("library", library(), 0), ("details", details(), 0), ("details-scrolled", details(), 760), ("settings", dialog(), 0)]
 
 app = QApplication(sys.argv)
 view = QWebEngineView()
 view.settings().setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessFileUrls, True)
 view.settings().setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessRemoteUrls, True)
-view.resize(QSize(1600, 900))
+view.resize(QSize(1920, 1080))
 view.show()
 queue = list(PAGES)
 

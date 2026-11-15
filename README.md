@@ -35,6 +35,7 @@ Put any of these **under** the `@import` line to change them:
   --sp-backdrop-tone: .15;       /* sepia tint on the fullscreen picture: 0 = none, 1 = full */
   --sp-backdrop-dim: 1;          /* how dark the shading behind the title is: 0–1 */
   --sp-page-backdrops: none;     /* "block" to show Jellyfin's backdrops on other pages too */
+  --sp-home-title: "Home";       /* the home page masthead; "" hides it, or write your own */
   --sp-radius: 4px;              /* corner rounding */
 }
 ```
@@ -46,11 +47,14 @@ Put any of these **under** the `@import` line to change them:
 | **Everywhere** | The page in warm dark paper (`#16140f`), surfaces a shade lighter, 1px hairlines, the sepia accent only on what matters: the active tab, Play, progress, selections and focus |
 | **Type** | Noto Serif for page, section and item titles, and for overviews; Noto Sans for everything else |
 | **Movie & series pages** | A fullscreen picture with a soft shade from the left and bottom, a large serif title and quiet square buttons with a sepia Play. Below that, a paper sheet holds the overview, cast and episodes |
+| **Home page** | Compact, like a reading-app library: a serif masthead, small letterspaced section labels over hairlines, dense rows of small covers with titles set flush left, and a thin sepia progress line. "My Media" shown as buttons becomes a row of small chips |
+| **Library grids** | Denser: 12 posters per row on a 1080p screen instead of 9, titles flush left |
 | **Cards** | Flat covers with small corners, no shadow; a sepia hairline on hover, a sepia outline when focused with a remote or keyboard |
 | **Header & menu** | Flat paper with a hairline. Tabs are muted, and the active one gets a sepia underline |
 | **Forms & dialogs** | Paper fields with a hairline that turns sepia when focused, a sepia primary button, and surfaces that use hairlines instead of heavy shadows |
 
 ![Home](docs/home.png)
+![A library](docs/library.png)
 ![Settings](docs/settings.png)
 
 The fullscreen picture shows on the desktop layout for items that have a backdrop image.
